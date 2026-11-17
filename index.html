@@ -1,0 +1,1349 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Tracker</title>
+
+<style>
+:root {
+  --bg:#101522;
+  --panel:#192235;
+  --panel2:#202c42;
+  --border:#2b3850;
+  --text:#f2f5fc;
+  --muted:#91a0b8;
+  --blue:#6595ff;
+  --green:#49d6a0;
+  --purple:#ae91ff;
+  --orange:#ffb86b;
+  --red:#ff747e;
+}
+
+* {
+  box-sizing:border-box;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:25px 16px;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+}
+
+button,select,input {
+  font:inherit;
+}
+
+button {
+  cursor:pointer;
+  border:0;
+  transition:.15s;
+}
+
+button:hover { filter:brightness(1.12); }
+
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:30px;
+}
+
+.logo {
+  font-size:25px;
+  font-weight:800;
+  letter-spacing:-1px;
+}
+
+.logo span { color:var(--blue); }
+
+.date-label {
+  font-size:13px;
+  color:var(--muted);
+}
+
+.greeting { margin-bottom:22px; }
+
+.greeting h1 {
+  font-size:25px;
+  margin:0 0 7px;
+}
+
+.greeting p {
+  color:var(--muted);
+  font-size:14px;
+  margin:0;
+}
+
+/* NAVIGATION */
+
+.nav {
+  display:flex;
+  gap:8px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:5px;
+  margin-bottom:20px;
+}
+
+.nav button {
+  flex:1;
+  padding:12px;
+  background:transparent;
+  color:var(--muted);
+  border-radius:8px;
+  font-weight:650;
+}
+
+.nav button.active {
+  background:var(--panel2);
+  color:var(--text);
+}
+
+/* CARDS */
+
+.card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:19px;
+}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.stat-label {
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+.stat-value {
+  font-size:25px;
+  font-weight:750;
+  font-variant-numeric:tabular-nums;
+}
+
+.stat-sub {
+  color:var(--muted);
+  font-size:11px;
+  margin-top:6px;
+}
+
+.section-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+  gap:10px;
+}
+
+.section-heading h2 {
+  font-size:15px;
+  margin:0;
+}
+
+.section-heading span {
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* TIMER */
+
+.main-card {
+  text-align:center;
+  padding:30px 20px;
+  margin-bottom:18px;
+}
+
+.section-label {
+  color:var(--muted);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+}
+
+select {
+  background:var(--panel2);
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:11px;
+}
+
+#subject {
+  margin-top:15px;
+  min-width:210px;
+  text-align:center;
+}
+
+.timer {
+  font-size:clamp(48px,11vw,76px);
+  font-weight:750;
+  letter-spacing:-3px;
+  margin:23px 0 8px;
+  font-variant-numeric:tabular-nums;
+}
+
+.timer-status {
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:23px;
+}
+
+.buttons {
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.btn {
+  padding:12px 22px;
+  border-radius:9px;
+  font-weight:650;
+}
+
+.primary {
+  background:var(--blue);
+  color:white;
+}
+
+.finish {
+  background:var(--green);
+  color:#10251e;
+}
+
+.secondary {
+  background:var(--panel2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+
+/* GOAL */
+
+.goal-card { margin-bottom:18px; }
+
+.goal-settings {
+  display:flex;
+  gap:7px;
+  align-items:center;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.goal-settings input {
+  width:55px;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:7px;
+  border-radius:7px;
+  text-align:center;
+}
+
+.progress-track {
+  height:10px;
+  background:var(--panel2);
+  border-radius:20px;
+  overflow:hidden;
+  margin:13px 0;
+}
+
+.progress-fill {
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--blue),var(--green));
+  border-radius:20px;
+  transition:.3s;
+}
+
+.goal-footer {
+  display:flex;
+  justify-content:space-between;
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* SUBJECTS */
+
+.columns {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:18px;
+}
+
+.subject-row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+  gap:8px;
+}
+
+.subject-row:last-child { border:0; }
+
+.subject-name {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:13px;
+}
+
+.dot {
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+
+.subject-time {
+  font-size:13px;
+  font-weight:650;
+  white-space:nowrap;
+}
+
+.session {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+  gap:10px;
+}
+
+.session:last-child { border:0; }
+
+.session-name {
+  font-size:13px;
+  font-weight:600;
+}
+
+.session-time {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:4px;
+}
+
+.session-duration {
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.empty {
+  text-align:center;
+  padding:24px 8px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* HISTORY */
+
+.history-section {
+  display:none;
+}
+
+.history-layout {
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:15px;
+  margin-bottom:18px;
+}
+
+.month-controls {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:17px;
+}
+
+.month-controls h2 {
+  font-size:16px;
+  margin:0;
+}
+
+.month-controls button {
+  background:var(--panel2);
+  color:var(--text);
+  border-radius:8px;
+  padding:8px 13px;
+}
+
+.calendar {
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:5px;
+}
+
+.weekday {
+  text-align:center;
+  font-size:11px;
+  color:var(--muted);
+  padding:8px 0;
+}
+
+.day {
+  min-width:0;
+  aspect-ratio:1;
+  background:var(--panel2);
+  border:1px solid transparent;
+  border-radius:8px;
+  color:var(--text);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:3px;
+  font-size:12px;
+  padding:2px;
+}
+
+.day:disabled {
+  opacity:.25;
+  cursor:default;
+}
+
+.day.selected {
+  border:2px solid var(--blue);
+}
+
+.day.today {
+  box-shadow:inset 0 0 0 1px var(--blue);
+}
+
+.day-dot {
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:var(--green);
+}
+
+.day.level1 { background:#25483f; }
+.day.level2 { background:#236d56; }
+.day.level3 { background:#29966e; }
+.day.level4 { background:#42bd8c; color:#10251e; }
+
+.calendar-legend {
+  display:flex;
+  justify-content:flex-end;
+  gap:7px;
+  align-items:center;
+  color:var(--muted);
+  font-size:10px;
+  margin-top:13px;
+}
+
+.legend-box {
+  width:11px;
+  height:11px;
+  border-radius:3px;
+}
+
+.selected-date {
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:15px;
+}
+
+.history-stat {
+  background:var(--panel2);
+  padding:14px;
+  border-radius:10px;
+  margin-bottom:12px;
+}
+
+.history-stat small {
+  color:var(--muted);
+  font-size:11px;
+}
+
+.history-stat strong {
+  display:block;
+  font-size:24px;
+  margin-top:5px;
+}
+
+.history-details {
+  margin-top:15px;
+}
+
+.weekly-bars {
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:9px;
+  height:145px;
+  padding-top:10px;
+}
+
+.bar-column {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  height:100%;
+  justify-content:flex-end;
+  gap:7px;
+}
+
+.bar {
+  width:100%;
+  max-width:38px;
+  min-height:3px;
+  background:var(--blue);
+  border-radius:5px 5px 2px 2px;
+}
+
+.bar-label {
+  font-size:10px;
+  color:var(--muted);
+}
+
+.bar-hours {
+  font-size:9px;
+  color:var(--muted);
+}
+
+.history-list {
+  margin-top:18px;
+}
+
+.history-day {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:13px 0;
+  border-bottom:1px solid var(--border);
+  gap:10px;
+}
+
+.history-day:last-child { border:0; }
+
+.history-day button {
+  background:transparent;
+  color:var(--text);
+  padding:0;
+  text-align:left;
+  font-size:13px;
+  font-weight:650;
+}
+
+.history-day small {
+  display:block;
+  color:var(--muted);
+  margin-top:5px;
+  font-size:11px;
+}
+
+.history-day strong {
+  font-size:13px;
+}
+
+.footer {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:22px;
+}
+
+.clear {
+  background:transparent;
+  color:var(--muted);
+  text-decoration:underline;
+  padding:5px;
+  font-size:11px;
+}
+
+@media(max-width:650px) {
+  body { padding:18px 12px; }
+  .stats { gap:8px; }
+  .card { padding:14px; }
+  .stat-value { font-size:19px; }
+  .columns,.history-layout { grid-template-columns:1fr; }
+  .main-card { padding:25px 12px; }
+  .timer { letter-spacing:-2px; }
+  .day { font-size:11px; }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header class="topbar">
+  <div class="logo">study<span>.</span></div>
+  <div class="date-label" id="dateLabel"></div>
+</header>
+
+<div class="greeting">
+  <h1>Welcome back!</h1>
+  <p>Every session counts towards your goals.</p>
+</div>
+
+<nav class="nav">
+  <button class="active" id="todayTab">Today</button>
+  <button id="historyTab">Study history</button>
+</nav>
+
+<!-- TODAY PAGE -->
+
+<section id="todayPage">
+
+  <div class="stats">
+    <div class="card">
+      <div class="stat-label">Study time</div>
+      <div class="stat-value" id="totalTime">0h 00m</div>
+      <div class="stat-sub">Today's total</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">Sessions</div>
+      <div class="stat-value" id="sessionCount">0</div>
+      <div class="stat-sub">Completed today</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">Goal completed</div>
+      <div class="stat-value" id="goalPercent">0%</div>
+      <div class="stat-sub">Daily progress</div>
+    </div>
+  </div>
+
+  <div class="card main-card">
+    <div class="section-label">Study session</div>
+
+    <select id="subject">
+      <option>Maths Adv</option>
+      <option>Maths Ext 1</option>
+      <option>English Adv</option>
+      <option>English Ext 1</option>
+      <option>Chemistry</option>
+      <option>Biology</option>
+    </select>
+
+    <div class="timer" id="display">00:00:00</div>
+    <div class="timer-status" id="timerStatus">Ready when you are.</div>
+
+    <div class="buttons">
+      <button class="btn primary" id="toggleBtn">Start studying</button>
+      <button class="btn finish" id="finishBtn">Finish session</button>
+      <button class="btn secondary" id="resetBtn">Reset</button>
+    </div>
+  </div>
+
+  <div class="card goal-card">
+    <div class="section-heading">
+      <h2>Daily study goal</h2>
+      <div class="goal-settings">
+        Target
+        <input type="number" id="goalInput" min="1" max="24" value="6">
+        hrs
+      </div>
+    </div>
+
+    <div class="goal-footer">
+      <span id="goalProgress">0h studied</span>
+      <span id="goalTarget">6h target</span>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="goal-footer">
+      <span id="remaining">6h remaining</span>
+      <span id="goalMessage">Keep going!</span>
+    </div>
+  </div>
+
+  <div class="columns">
+    <div class="card">
+      <div class="section-heading">
+        <h2>Subject breakdown</h2>
+        <span>Today</span>
+      </div>
+      <div id="subjectList"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-heading">
+        <h2>Recent sessions</h2>
+        <span id="historyCount">0 sessions</span>
+      </div>
+      <div id="sessionList"></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- HISTORY PAGE -->
+
+<section id="historyPage" class="history-section">
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="section-heading">
+      <h2>Study calendar</h2>
+      <span>Your daily progress</span>
+    </div>
+
+    <div class="month-controls">
+      <button id="prevMonth">←</button>
+      <h2 id="monthTitle"></h2>
+      <button id="nextMonth">→</button>
+    </div>
+
+    <div class="calendar" id="calendar"></div>
+
+    <div class="calendar-legend">
+      Less
+      <span class="legend-box" style="background:#202c42"></span>
+      <span class="legend-box" style="background:#25483f"></span>
+      <span class="legend-box" style="background:#236d56"></span>
+      <span class="legend-box" style="background:#29966e"></span>
+      <span class="legend-box" style="background:#42bd8c"></span>
+      More
+    </div>
+  </div>
+
+  <div class="history-layout">
+
+    <div class="card">
+      <div class="section-heading">
+        <h2>Selected day</h2>
+        <span id="selectedDayLabel">Today</span>
+      </div>
+
+      <div class="selected-date" id="selectedDate"></div>
+
+      <div class="history-stat">
+        <small>Total study time</small>
+        <strong id="selectedTotal">0h 00m</strong>
+      </div>
+
+      <div class="history-stat">
+        <small>Sessions completed</small>
+        <strong id="selectedSessions">0</strong>
+      </div>
+
+      <div class="history-stat">
+        <small>Daily goal</small>
+        <strong id="selectedGoal">0%</strong>
+      </div>
+
+      <div class="history-details">
+        <div class="section-heading">
+          <h2>Subject breakdown</h2>
+        </div>
+        <div id="selectedSubjects"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-heading">
+        <h2>Sessions</h2>
+        <span id="selectedSessionCount">0 sessions</span>
+      </div>
+      <div id="selectedSessionList"></div>
+    </div>
+
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="section-heading">
+      <h2>Weekly overview</h2>
+      <span>Last 7 days</span>
+    </div>
+
+    <div class="history-stat">
+      <small>Total study time this week</small>
+      <strong id="weeklyTotal">0h 00m</strong>
+    </div>
+
+    <div class="weekly-bars" id="weeklyBars"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-heading">
+      <h2>Previous study days</h2>
+      <span>Most recent first</span>
+    </div>
+    <div id="previousDays" class="history-list"></div>
+  </div>
+
+</section>
+
+<footer class="footer">
+  <span>Progress is saved automatically.</span>
+  <button class="clear" id="clearBtn">Clear today's data</button>
+</footer>
+
+</div>
+
+<script>
+const subjects = [
+  "Maths Adv",
+  "Maths Ext 1",
+  "English Adv",
+  "English Ext 1",
+  "Chemistry",
+  "Biology"
+];
+
+const colours = [
+  "#6595ff",
+  "#ae91ff",
+  "#ffb86b",
+  "#ff747e",
+  "#49d6a0",
+  "#55c8d9"
+];
+
+const $ = id => document.getElementById(id);
+
+function dateKey(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth()+1).padStart(2,"0");
+  const d = String(date.getDate()).padStart(2,"0");
+  return `${y}-${m}-${d}`;
+}
+
+function emptyDay() {
+  return {
+    totals:{},
+    sessions:[],
+    goal:6
+  };
+}
+
+// ALL DAYS ARE STORED SEPARATELY
+
+let database = JSON.parse(
+  localStorage.getItem("studyTracker") || '{"days":{}}'
+);
+
+if (!database.days) database.days = {};
+
+function getDay(key = dateKey()) {
+  if (!database.days[key]) {
+    database.days[key] = emptyDay();
+  }
+
+  const day = database.days[key];
+
+  if (!day.totals) day.totals = {};
+  if (!day.sessions) day.sessions = [];
+  if (!day.goal) day.goal = 6;
+
+  return day;
+}
+
+function saveDatabase() {
+  localStorage.setItem(
+    "studyTracker",
+    JSON.stringify(database)
+  );
+}
+
+function formatTime(s) {
+  s = Math.max(0,Math.floor(s));
+
+  const h = Math.floor(s/3600);
+  const m = Math.floor((s%3600)/60);
+  const sec = s%60;
+
+  return [h,m,sec]
+    .map(n=>String(n).padStart(2,"0"))
+    .join(":");
+}
+
+function shortTime(s) {
+  const h = Math.floor(s/3600);
+  const m = Math.floor((s%3600)/60);
+
+  return h ? `${h}h ${m}m` : `${m}m`;
+}
+
+function totalSeconds(day) {
+  return Object.values(day.totals)
+    .reduce((a,b)=>a+b,0);
+}
+
+function getDayLabel(key) {
+  return new Date(key+"T12:00:00").toLocaleDateString(
+    "en-AU",
+    {
+      weekday:"long",
+      day:"numeric",
+      month:"long",
+      year:"numeric"
+    }
+  );
+}
+
+// TIMER
+
+let seconds = 0;
+let timer = null;
+let startedAt = null;
+let activeSubject = null;
+
+function updateTimer() {
+  if (startedAt !== null) {
+    seconds = Math.floor((Date.now()-startedAt)/1000);
+  }
+
+  $("display").textContent = formatTime(seconds);
+}
+
+function toggleTimer() {
+  if (timer) {
+    updateTimer();
+    clearInterval(timer);
+    timer = null;
+    startedAt = null;
+
+    $("toggleBtn").textContent = "Resume";
+    $("timerStatus").textContent = "Session paused";
+    $("subject").disabled = false;
+  } else {
+    if (!activeSubject) {
+      activeSubject = $("subject").value;
+    }
+
+    $("subject").value = activeSubject;
+    $("subject").disabled = true;
+
+    startedAt = Date.now()-seconds*1000;
+    timer = setInterval(updateTimer,250);
+
+    $("toggleBtn").textContent = "Pause";
+    $("timerStatus").textContent =
+      "Currently studying "+activeSubject;
+  }
+}
+
+function finishSession() {
+  updateTimer();
+
+  if (timer) clearInterval(timer);
+
+  timer = null;
+  startedAt = null;
+
+  if (seconds > 0) {
+    // Attribute a session to the date it was started.
+    const key = sessionDate;
+    const day = getDay(key);
+
+    const subject = activeSubject || $("subject").value;
+
+    day.totals[subject] =
+      (day.totals[subject]||0)+seconds;
+
+    day.sessions.unshift({
+      subject,
+      duration:seconds,
+      time:new Date().toLocaleTimeString(
+        [],{hour:"2-digit",minute:"2-digit"}
+      )
+    });
+
+    saveDatabase();
+  }
+
+  resetTimer();
+  renderToday();
+  renderHistory();
+}
+
+let sessionDate = dateKey();
+
+function resetTimer() {
+  if (timer) clearInterval(timer);
+
+  timer = null;
+  startedAt = null;
+  seconds = 0;
+  activeSubject = null;
+  sessionDate = dateKey();
+
+  $("display").textContent = "00:00:00";
+  $("toggleBtn").textContent = "Start studying";
+  $("timerStatus").textContent = "Ready when you are.";
+  $("subject").disabled = false;
+}
+
+// TODAY DASHBOARD
+
+function renderToday() {
+  const day = getDay();
+  const total = totalSeconds(day);
+  const goal = day.goal || 6;
+
+  const percentage = Math.min(
+    100,Math.round(total/(goal*3600)*100)
+  );
+
+  $("totalTime").textContent = shortTime(total);
+  $("sessionCount").textContent = day.sessions.length;
+  $("goalPercent").textContent = percentage+"%";
+
+  $("goalProgress").textContent = shortTime(total)+" studied";
+  $("goalTarget").textContent = goal+"h target";
+
+  $("progressFill").style.width = percentage+"%";
+
+  const remaining = Math.max(0,goal*3600-total);
+
+  $("remaining").textContent = remaining
+    ? shortTime(remaining)+" remaining"
+    : "Goal achieved!";
+
+  $("goalMessage").textContent = percentage>=100
+    ? "Well done!"
+    : percentage>=50
+      ? "Over halfway!"
+      : "Keep going!";
+
+  $("goalInput").value = goal;
+
+  $("subjectList").innerHTML = subjects.map((sub,i)=>`
+    <div class="subject-row">
+      <div class="subject-name">
+        <span class="dot" style="background:${colours[i]}"></span>
+        ${sub}
+      </div>
+      <span class="subject-time">
+        ${shortTime(day.totals[sub]||0)}
+      </span>
+    </div>
+  `).join("");
+
+  $("historyCount").textContent =
+    day.sessions.length+" sessions";
+
+  if (!day.sessions.length) {
+    $("sessionList").innerHTML =
+      '<div class="empty">No sessions yet. Start studying!</div>';
+  } else {
+    $("sessionList").innerHTML =
+      day.sessions.slice(0,8).map(s=>`
+        <div class="session">
+          <div>
+            <div class="session-name">${escapeHTML(s.subject)}</div>
+            <div class="session-time">${escapeHTML(s.time)}</div>
+          </div>
+          <div class="session-duration">${shortTime(s.duration)}</div>
+        </div>
+      `).join("");
+  }
+}
+
+// HISTORY AND CALENDAR
+
+let calendarDate = new Date();
+let selectedDate = dateKey();
+
+function renderCalendar() {
+  const year = calendarDate.getFullYear();
+  const month = calendarDate.getMonth();
+
+  $("monthTitle").textContent =
+    calendarDate.toLocaleDateString("en-AU",{
+      month:"long",year:"numeric"
+    });
+
+  const first = new Date(year,month,1).getDay();
+  const days = new Date(year,month+1,0).getDate();
+
+  let html = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+    .map(d=>`<div class="weekday">${d}</div>`)
+    .join("");
+
+  for (let i=0;i<first;i++) {
+    html += "<div></div>";
+  }
+
+  const today = dateKey();
+
+  for (let d=1;d<=days;d++) {
+    const date = new Date(year,month,d);
+    const key = dateKey(date);
+    const day = database.days[key];
+    const total = day ? totalSeconds(day) : 0;
+
+    let level = "";
+    const hours = total/3600;
+
+    if (hours>=6) level="level4";
+    else if (hours>=4) level="level3";
+    else if (hours>=2) level="level2";
+    else if (hours>0) level="level1";
+
+    const isFuture = key>today;
+
+    html += `
+      <button
+        class="day ${level} ${key===selectedDate?"selected":""} ${key===today?"today":""}"
+        data-date="${key}"
+        ${isFuture?"disabled":""}
+        title="${key}: ${shortTime(total)}"
+      >
+        ${d}
+        ${total>0?'<span class="day-dot"></span>':""}
+      </button>
+    `;
+  }
+
+  $("calendar").innerHTML = html;
+
+  $("calendar").querySelectorAll("[data-date]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      selectedDate = btn.dataset.date;
+      renderHistory();
+    });
+  });
+}
+
+function renderSelectedDay() {
+  const day = database.days[selectedDate] || emptyDay();
+  const total = totalSeconds(day);
+  const goal = day.goal || 6;
+
+  $("selectedDate").textContent = getDayLabel(selectedDate);
+
+  $("selectedDayLabel").textContent =
+    selectedDate===dateKey()?"Today":"Past day";
+
+  $("selectedTotal").textContent = shortTime(total);
+  $("selectedSessions").textContent = day.sessions.length;
+
+  $("selectedGoal").textContent =
+    Math.min(100,Math.round(total/(goal*3600)*100))+"%";
+
+  $("selectedSessionCount").textContent =
+    day.sessions.length+" sessions";
+
+  $("selectedSubjects").innerHTML = subjects.map((sub,i)=>`
+    <div class="subject-row">
+      <div class="subject-name">
+        <span class="dot" style="background:${colours[i]}"></span>
+        ${sub}
+      </div>
+      <span class="subject-time">
+        ${shortTime(day.totals[sub]||0)}
+      </span>
+    </div>
+  `).join("");
+
+  if (!day.sessions.length) {
+    $("selectedSessionList").innerHTML =
+      '<div class="empty">No study sessions recorded for this day.</div>';
+  } else {
+    $("selectedSessionList").innerHTML =
+      day.sessions.map(s=>`
+        <div class="session">
+          <div>
+            <div class="session-name">${escapeHTML(s.subject)}</div>
+            <div class="session-time">${escapeHTML(s.time)}</div>
+          </div>
+          <div class="session-duration">${shortTime(s.duration)}</div>
+        </div>
+      `).join("");
+  }
+}
+
+// WEEKLY OVERVIEW
+
+function renderWeekly() {
+  const today = new Date();
+  const dates = [];
+
+  for (let i=6;i>=0;i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate()-i);
+    dates.push(d);
+  }
+
+  const values = dates.map(d=>{
+    const day = database.days[dateKey(d)] || emptyDay();
+    return totalSeconds(day);
+  });
+
+  const total = values.reduce((a,b)=>a+b,0);
+  const max = Math.max(...values,3600);
+
+  $("weeklyTotal").textContent = shortTime(total);
+
+  $("weeklyBars").innerHTML = dates.map((d,i)=>{
+    const value = values[i];
+    const height = value===0 ? 3 : Math.max(5,value/max*100);
+
+    return `
+      <div class="bar-column">
+        <div class="bar-hours">${value?shortTime(value):"–"}</div>
+        <div class="bar" style="height:${height}%"></div>
+        <div class="bar-label">
+          ${d.toLocaleDateString("en-AU",{weekday:"short"})}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+// PREVIOUS DAYS
+
+function renderPreviousDays() {
+  const keys = Object.keys(database.days)
+    .filter(key=>key<=dateKey())
+    .filter(key=>totalSeconds(database.days[key])>0)
+    .sort((a,b)=>b.localeCompare(a));
+
+  if (!keys.length) {
+    $("previousDays").innerHTML =
+      '<div class="empty">Your study history will appear here.</div>';
+    return;
+  }
+
+  $("previousDays").innerHTML = keys.slice(0,30).map(key=>{
+    const day = database.days[key];
+
+    return `
+      <div class="history-day">
+        <div>
+          <button data-history-date="${key}">
+            ${getDayLabel(key)}
+          </button>
+          <small>${day.sessions.length} sessions</small>
+        </div>
+        <strong>${shortTime(totalSeconds(day))}</strong>
+      </div>
+    `;
+  }).join("");
+
+  $("previousDays").querySelectorAll("[data-history-date]")
+    .forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        selectedDate=btn.dataset.historyDate;
+
+        calendarDate=new Date(selectedDate+"T12:00:00");
+        renderHistory();
+
+        window.scrollTo({top:0,behavior:"smooth"});
+      });
+    });
+}
+
+function renderHistory() {
+  renderCalendar();
+  renderSelectedDay();
+  renderWeekly();
+  renderPreviousDays();
+}
+
+// HELPERS
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g,char=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[char]);
+}
+
+// NAVIGATION
+
+function showPage(page) {
+  const today = page==="today";
+
+  $("todayPage").style.display=today?"block":"none";
+  $("historyPage").style.display=today?"none":"block";
+
+  $("todayTab").classList.toggle("active",today);
+  $("historyTab").classList.toggle("active",!today);
+
+  $("clearBtn").style.display=today?"block":"none";
+
+  if (!today) renderHistory();
+}
+
+$("todayTab").addEventListener("click",()=>showPage("today"));
+$("historyTab").addEventListener("click",()=>showPage("history"));
+
+$("prevMonth").addEventListener("click",()=>{
+  calendarDate.setMonth(calendarDate.getMonth()-1);
+  renderHistory();
+});
+
+$("nextMonth").addEventListener("click",()=>{
+  const next = new Date(calendarDate);
+  next.setMonth(next.getMonth()+1);
+
+  if (next<=new Date(new Date().getFullYear(),new Date().getMonth(),1)) {
+    calendarDate=next;
+    renderHistory();
+  }
+});
+
+// CONTROLS
+
+$("toggleBtn").addEventListener("click",toggleTimer);
+$("finishBtn").addEventListener("click",finishSession);
+$("resetBtn").addEventListener("click",resetTimer);
+
+$("goalInput").addEventListener("change",()=>{
+  const day = getDay();
+  day.goal = Math.max(1,Math.min(24,
+    Number($("goalInput").value)||6
+  ));
+
+  saveDatabase();
+  renderToday();
+});
+
+$("clearBtn").addEventListener("click",()=>{
+  if (!confirm("Delete all of today's study records?")) return;
+
+  delete database.days[dateKey()];
+
+  saveDatabase();
+  resetTimer();
+  renderToday();
+  renderHistory();
+});
+
+// INITIALISE
+
+$("dateLabel").textContent =
+  new Date().toLocaleDateString("en-AU",{
+    weekday:"long",
+    day:"numeric",
+    month:"long"
+  });
+
+renderToday();
+</script>
+
+</body>
+</html>
